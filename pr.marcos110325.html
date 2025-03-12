@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <title>Discipulado – Cuidado com Língua, Soberba e Preguiça</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet"/>
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <style>
+    /*--------------------------------------------------------------
+     * VARIÁVEIS E PALETA DE CORES
+     *--------------------------------------------------------------*/
+    :root {
+      --bg-color: #faf9f7;
+      --container-bg: #ffffff;
+      --primary-color: #4A4A4A; /* Cinza escuro */
+      --highlight: #D4AF37;     /* Dourado */
+      --accent-color: #C0C0C0;  /* Prata */
+      --accent-dark: #000;
+      --text-color: #333;
+      --transition-speed: 0.4s;
+      --base-font-size: 18px;
+    }
+    [data-theme="dark"] {
+      --bg-color: #1c1c1c;
+      --container-bg: #2c2c2c;
+      --primary-color: #777;
+      --highlight: #d4af37;
+      --accent-color: #c0c0c0;
+      --accent-dark: #000;
+      --text-color: #e0e0e0;
+    }
+
+    /*--------------------------------------------------------------
+     * ESTILOS GLOBAIS – MELHOR LEGIBILIDADE
+     *--------------------------------------------------------------*/
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: var(--base-font-size);
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background var(--transition-speed), color var(--transition-speed);
+      overflow-x: hidden;
+    }
+    a, button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /*--------------------------------------------------------------
+     * BACKGROUND TEATRAL COM LUZES
+     *--------------------------------------------------------------*/
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, rgba(0,0,0,0.02) 100%);
+      transform: translateX(-50%);
+      pointer-events: none;
+      opacity: 0.2;
+      z-index: -1;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, transparent 80%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0.1;
+      z-index: -2;
+    }
+
+    /*--------------------------------------------------------------
+     * ANIMAÇÕES E KEYFRAMES
+     *--------------------------------------------------------------*/
+    @keyframes brandPulse {
+      0% { text-shadow: 0 0 4px rgba(0,0,0,0.2), 0 0 6px var(--highlight); }
+      50% { text-shadow: 0 0 12px var(--accent-color), 0 0 6px rgba(255,255,255,0.3); }
+      100% { text-shadow: 0 0 4px rgba(0,0,0,0.2), 0 0 6px var(--highlight); }
+    }
+    @keyframes colorCycle {
+      0%   { fill: #fff; }
+      25%  { fill: #cd7f32; }
+      50%  { fill: #C0C0C0; }
+      75%  { fill: #D4AF37; }
+      100% { fill: #fff; }
+    }
+
+    /*--------------------------------------------------------------
+     * CAPA – Apresentação, Leitura e Informações do Autor
+     *--------------------------------------------------------------*/
+    #startScreen {
+      text-align: center;
+      margin: 50px auto;
+      padding: 30px;
+      max-width: 700px;
+      position: relative;
+    }
+    #startScreen h1 {
+      font-size: 2.8em;
+      margin-bottom: 15px;
+    }
+    #startScreen h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2em;
+      color: var(--highlight);
+      margin-top: 5px;
+    }
+    #startScreen p {
+      font-size: 1.3em;
+      margin: 20px auto;
+      line-height: 1.8;
+    }
+    #startScreen .info {
+      font-size: 1.1em;
+      color: var(--primary-color);
+      margin-top: 10px;
+    }
+    .control-btn {
+      margin-top: 25px;
+      background: var(--primary-color);
+      color: #fff;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1em;
+      transition: background var(--transition-speed), transform 0.2s, box-shadow 0.2s;
+      outline: none;
+      box-shadow: 0 0 8px var(--primary-color);
+      cursor: pointer;
+    }
+    .control-btn:hover {
+      background: var(--highlight);
+      transform: scale(1.05);
+      box-shadow: 0 0 16px var(--accent-color);
+    }
+
+    /*--------------------------------------------------------------
+     * CONTAINER DO E‑BOOK – Maior espaçamento para melhor leitura
+     *--------------------------------------------------------------*/
+    .ebook-container {
+      max-width: 900px;
+      margin: 30px auto 100px auto;
+      background: var(--container-bg);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      display: none; /* Exibe somente após iniciar */
+      position: relative;
+      transition: background var(--transition-speed);
+    }
+
+    /*--------------------------------------------------------------
+     * SLIDE CONTAINER (Páginas) – Espaço ampliado para textos
+     *--------------------------------------------------------------*/
+    .slide-container {
+      overflow: hidden;
+      height: 550px;
+      border: 2px solid var(--primary-color);
+      border-radius: 10px;
+      background: var(--container-bg);
+      padding: 30px;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+      transition: background var(--transition-speed), box-shadow var(--transition-speed);
+    }
+    [data-theme="dark"] .slide-container {
+      background: #2c2c2c;
+    }
+    .page {
+      display: none;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    main {
+      font-size: 1.3em;
+      line-height: 1.9;
+      text-align: left;
+      margin: 0 auto 30px auto;
+      max-width: 95%;
+      position: relative;
+      z-index: 1;
+    }
+    main h2 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 15px;
+      font-family: 'Playfair Display', serif;
+      font-size: 2em;
+    }
+    .summary-box {
+      background: var(--highlight);
+      color: #fff;
+      padding: 12px 15px;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-size: 1.1em;
+      text-align: center;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
+    .cta {
+      margin-top: 20px;
+      font-style: italic;
+      color: var(--highlight);
+      font-weight: bold;
+    }
+
+    /*--------------------------------------------------------------
+     * BARRA DE PROGRESSO
+     *--------------------------------------------------------------*/
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 25px 0;
+    }
+    .progress {
+      height: 100%;
+      background: var(--primary-color);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    /*--------------------------------------------------------------
+     * SIDEBAR (ÍNDICE)
+     *--------------------------------------------------------------*/
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: var(--container-bg);
+      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+      transition: left var(--transition-speed);
+      overflow-y: auto;
+      z-index: 1500;
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar h3 {
+      text-align: center;
+      padding: 15px;
+      background: var(--primary-color);
+      color: #fff;
+      margin: 0;
+      font-size: 1.4em;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar li {
+      border-bottom: 1px solid #ccc;
+    }
+    .sidebar li a {
+      display: block;
+      padding: 12px 15px;
+      font-size: 1.2em;
+      text-decoration: none;
+      color: var(--text-color);
+      transition: background var(--transition-speed), color var(--transition-speed);
+    }
+    .sidebar li a:hover {
+      background: var(--highlight);
+      color: #fff;
+      border-radius: 5px;
+    }
+    .sidebar li.blank {
+      height: 80px;
+    }
+
+    /*--------------------------------------------------------------
+     * RODAPÉ DE NAVEGAÇÃO – Melhor legibilidade dos controles
+     *--------------------------------------------------------------*/
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: var(--primary-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
+      z-index: 2000;
+    }
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #fff;
+      transition: transform 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .bottom-nav .nav-item i {
+      font-size: 1.6em;
+      transition: color var(--transition-speed);
+    }
+    .nav-text {
+      font-size: 0.9em;
+      margin-top: 3px;
+    }
+    .bottom-nav .nav-item:hover {
+      transform: scale(1.1);
+    }
+    .bottom-nav .nav-item:hover i {
+      color: var(--highlight);
+    }
+    .tooltip {
+      position: absolute;
+      bottom: 45px;
+      background: #fff;
+      color: var(--primary-color);
+      padding: 5px 8px;
+      font-size: 0.9em;
+      border-radius: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      white-space: nowrap;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      transform: translateY(0);
+    }
+    .bottom-nav .nav-item:hover .tooltip {
+      opacity: 1;
+      transform: translateY(-10px);
+    }
+
+    /*--------------------------------------------------------------
+     * IMPRESSÃO
+     *--------------------------------------------------------------*/
+    @media print {
+      #startScreen, .bottom-nav, .sidebar {
+        display: none !important;
+      }
+      .ebook-container {
+        margin: 0 auto;
+        box-shadow: none;
+      }
+    }
+
+    /*--------------------------------------------------------------
+     * RESPONSIVIDADE – Ajustes para Android e iPhone
+     *--------------------------------------------------------------*/
+    @media only screen and (max-width: 768px) {
+      .ebook-container { margin-bottom: 100px; }
+      .slide-container { height: calc(100vh - 60px); padding: 20px; }
+      main { font-size: 1.1em; }
+      .nav-item i { font-size: 1.8em; }
+      .nav-text { display: none; }
+    }
+
+    /* Movimento reduzido */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition: none !important;
+      }
+    }
+
+    /*--------------------------------------------------------------
+     * LOGO – Bolhas animadas com efeito de reflexo
+     *--------------------------------------------------------------*/
+    .logo {
+      margin: 0 auto 15px;
+      width: 240px;
+      height: 180px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .brand-highlight {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.2em;
+      margin: 0;
+      letter-spacing: 1px;
+      text-align: center;
+      background: linear-gradient(45deg, var(--primary-color), var(--highlight), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 4px rgba(0,0,0,0.2), 0 0 12px rgba(255,255,255,0.2);
+      animation: brandPulse 3s ease-in-out infinite alternate;
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+<!-- CAPA – Com leitura automática e informações do autor -->
+<div id="startScreen">
+  <div class="logo">
+    <!-- SVG com bolhas animadas e texto -->
+    <svg viewBox="0 0 220 150" aria-hidden="true">
+      <defs>
+        <linearGradient id="reflectionGradient" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <circle cx="20"  cy="75" r="8" fill="#fff">
+        <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="40"  cy="75" r="8" fill="#cd7f32">
+        <animate attributeName="r" values="8;12;8" dur="2s" begin="0.15s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" begin="0.15s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="60"  cy="75" r="8" fill="#C0C0C0">
+        <animate attributeName="r" values="8;12;8" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="80"  cy="75" r="8" fill="#D4AF37">
+        <animate attributeName="r" values="8;12;8" dur="2s" begin="0.45s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" begin="0.45s" repeatCount="indefinite"/>
+      </circle>
+      <text x="110" y="70" text-anchor="middle" font-size="26" font-family="Playfair Display" style="animation: colorCycle 4s infinite ease-in-out;">
+        Discipulado
+      </text>
+      <g transform="translate(110,75) scale(1,-1)">
+        <text x="0" y="0" text-anchor="middle" font-size="26" font-family="Playfair Display" fill="url(#reflectionGradient)" style="opacity:0.6">
+          Discipulado
+        </text>
+      </g>
+    </svg>
+  </div>
+  <h1 class="brand-highlight">Cuidado com a Língua, Soberba e Preguiça</h1>
+  <h2>Um estudo transformador baseado em Provérbios, Tiago e Salmos</h2>
+  <p>
+    Seja bem-vindo a este discipulado que visa transformar sua vida através do poder da Palavra. Aqui você encontrará ensinamentos que o ajudarão a refletir sobre o uso da língua, os perigos da soberba e os riscos da preguiça – elementos fundamentais para o seu crescimento espiritual.
+  </p>
+  <p class="info">Autor: Pastor Marcos Sabino | Data: 11/03/2025</p>
+  <button id="startBtn" class="control-btn">Iniciar</button>
+</div>
+
+<!-- SIDEBAR (ÍNDICE) -->
+<nav class="sidebar" id="sidebar" aria-label="Índice do Discipulado">
+  <h3>Índice</h3>
+  <ul id="indexList"></ul>
+</nav>
+
+<!-- CONTAINER DO E‑BOOK -->
+<div class="ebook-container" id="ebookContainer">
+  <!-- HEADER – Logo, Título, Autor e Data -->
+  <header>
+    <div class="logo" style="width:180px;height:140px;">
+      <svg viewBox="0 0 220 150" aria-hidden="true">
+        <text x="110" y="70" text-anchor="middle" font-size="22" font-family="Playfair Display" style="animation: colorCycle 4s infinite ease-in-out;">
+          Discipulado
+        </text>
+      </svg>
+    </div>
+    <h1 class="brand-highlight">Cuidado com a Língua, Soberba e Preguiça</h1>
+    <h2 id="page-title"></h2>
+    <p class="info" style="text-align:center; margin-top: 10px;">
+      Autor: Pastor Marcos Sabino | Data: 11/03/2025
+    </p>
+  </header>
+
+  <!-- Barra de Progresso Superior -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <!-- SLIDE CONTAINER (Páginas) -->
+  <div class="slide-container" id="slideContainer">
+    <!-- Página 0 – Introdução -->
+    <section class="page active" id="page0">
+      <main>
+        <h2>Introdução</h2>
+        <p>
+          Neste estudo, você será convidado a refletir profundamente sobre três áreas fundamentais para o seu crescimento espiritual:
+        </p>
+        <ul>
+          <li><strong>Cuidado com a sua Língua</strong>: Descubra como suas palavras podem ser instrumentos de transformação e edificação.</li>
+          <li><strong>Cuidado com a sua Soberba</strong>: Aprenda a reconhecer os perigos do orgulho e a importância da humildade.</li>
+          <li><strong>Cuidado com a sua Preguiça</strong>: Entenda como a falta de planejamento e a procrastinação podem atrapalhar sua jornada.</li>
+        </ul>
+        <div class="summary-box">
+          Permita que este discipulado seja o ponto de partida para uma mudança profunda e duradoura em sua vida.
+        </div>
+      </main>
+    </section>
+
+    <!-- TEMA 1: A LÍNGUA (3 páginas) -->
+    <section class="page" id="page1">
+      <main>
+        <h2>Tópico 1 – Provérbios 18:21</h2>
+        <p>
+          “A morte e a vida estão no poder da língua; e aquele que a ama comerá do seu fruto.”
+        </p>
+        <div class="summary-box">
+          Suas palavras possuem um poder transformador. Ao escolher cada frase com sabedoria, você constrói um legado de amor, fé e integridade.
+        </div>
+      </main>
+    </section>
+
+    <section class="page" id="page2">
+      <main>
+        <h2>Tópico 2 – Tiago 1:26</h2>
+        <p>
+          “Se alguém supõe ser religioso, deixando de refrear a sua língua, antes enganando o seu coração, a sua religião é vã.”
+        </p>
+        <div class="summary-box">
+          A verdadeira expressão de fé se revela na disciplina da fala. Use sua voz para inspirar e encorajar, refletindo a sinceridade de seu coração.
+        </div>
+      </main>
+    </section>
+
+    <section class="page" id="page3">
+      <main>
+        <h2>Tópico 3 – Tiago 3:2</h2>
+        <p>
+          “Porque todos tropeçamos em muitas coisas. Se alguém não tropeça em palavra, o tal é perfeito e poderoso para também refrear todo o corpo.”
+        </p>
+        <div class="summary-box">
+          O domínio sobre a língua é um sinal de maturidade espiritual. Cada palavra pode ser um tijolo na construção de uma vida repleta de sabedoria.
+        </div>
+      </main>
+    </section>
+
+    <!-- TEMA 2: A SOBERBA (4 páginas) -->
+    <section class="page" id="page4">
+      <main>
+        <h2>Tópico 4 – Provérbios 16:18</h2>
+        <p>
+          “A soberba precede a ruína, e a altivez do espírito precede a queda.”
+        </p>
+        <div class="summary-box">
+          A arrogância distorce a verdade e afasta-nos de Deus. Cultivar a humildade é reconhecer que o verdadeiro poder está na dependência da graça divina.
+        </div>
+      </main>
+    </section>
+
+    <section class="page" id="page5">
+      <main>
+        <h2>Tópico 5 – Provérbios 29:23</h2>
+        <p>
+          “A soberba do homem o abaterá, mas a honra sustentará o humilde de espírito.”
+        </p>
+        <div class="summary-box">
+          O caminho da verdadeira honra passa pela modéstia e pela submissão à vontade de Deus.
+        </div>
+      </main>
+    </section>
+
+    <section class="page" id="page6">
+      <main>
+        <h2>Tópico 6 – Salmos 19:13-14</h2>
+        <p>
+          “Também da soberba guarda o teu servo; que ela não me domine; então serei sincero, e ficarei limpo de grande transgressão.<br/>
+          Sejam agradáveis as palavras da minha boca e a meditação do meu coração perante a tua face, Senhor, rocha minha e redentor meu!”
+        </p>
+        <div class="summary-box">
+          Ao reconhecer nossas fraquezas, abrimos espaço para a transformação. Que este versículo o inspire a buscar a pureza e a sinceridade em cada ação.
+        </div>
+      </main>
+    </section>
+
+    <section class="page" id="page7">
+      <main>
+        <h2>Tópico 7 – Tiago 4:6 e Reflexão sobre a Soberba</h2>
+        <p>
+          “Deus resiste aos soberbos, mas dá graça aos humildes.”
+        </p>
+        <div class="summary-box">
+          Soberba e orgulho são comparáveis a um bafo desagradável – quem tem não sabe que tem. Este ensinamento nos convida a abandonar o orgulho e a abraçar a verdadeira humildade.
+        </div>
+      </main>
+    </section>
+
+    <!-- TEMA 3: A PREGUIÇA (3 páginas) -->
+    <section class="page" id="page8">
+      <main>
+        <h2>Tópico 8 – Provérbios 6:6-11</h2>
+        <p>
+          “Vai ter com a formiga, ó preguiçoso; olha para os seus caminhos, e sê sábio…”
+        </p>
+        <div class="summary-box">
+          A preguiça não é apenas ociosidade – é a ausência de um planejamento vital que impede o florescimento do seu potencial. Aprenda com a diligência da formiga e desperte para uma vida ativa.
+        </div>
+      </main>
+    </section>
+
+    <section class="page" id="page9">
+      <main>
+        <h2>Tópico 9 – Provérbios 19:24</h2>
+        <p>
+          “O preguiçoso esconde a mão no prato e nem ao menos a leva de novo à boca.”
+        </p>
+        <div class="summary-box">
+          A transformação ocorre quando abandonamos a passividade. Deixe que o trabalho árduo e a dedicação guiem cada passo da sua jornada.
+        </div>
+      </main>
+    </section>
+
+    <section class="page" id="page10">
+      <main>
+        <h2>Tópico 10 – Provérbios 26:13</h2>
+        <p>
+          “Diz o preguiçoso: Um leão está no caminho; um leão está nas ruas.”
+        </p>
+        <div class="summary-box">
+          Desculpas e adiamentos são barreiras à realização. Supere cada obstáculo com fé e determinação, transformando desafios em oportunidades.
+        </div>
+      </main>
+    </section>
+
+    <!-- Página 11 – Conclusão -->
+    <section class="page" id="page11">
+      <main>
+        <h2>Conclusão</h2>
+        <p>
+          Que este discipulado seja mais que um estudo – seja um divisor de águas em sua vida. Ao internalizar os ensinamentos sobre o poder da língua, os perigos da soberba e os riscos da preguiça, você se torna capaz de viver uma vida marcada pela sabedoria, humildade e dedicação.
+        </p>
+        <div class="summary-box">
+          Abrace cada ensinamento, transforme suas atitudes e inspire aqueles ao seu redor. Que a luz da Palavra ilumine cada decisão e conduza seus passos rumo a um futuro abençoado!
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <!-- Barra de Progresso Inferior -->
+  <div class="progress-bar" id="progressBarBottom">
+    <div id="progressBottom" class="progress"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV BAR – Controles de navegação e áudio/tema -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item" id="navIndex">
+    <i class="fas fa-list" aria-hidden="true"></i>
+    <div class="nav-text">Índice</div>
+    <div class="tooltip">Abrir/Fechar Índice</div>
+  </div>
+  <div class="nav-item" id="navPrev">
+    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+    <div class="nav-text">Anterior</div>
+    <div class="tooltip">Página Anterior</div>
+  </div>
+  <div class="nav-item" id="navRestart">
+    <i class="fas fa-redo-alt" aria-hidden="true"></i>
+    <div class="nav-text">Reiniciar</div>
+    <div class="tooltip">Voltar à Capa</div>
+  </div>
+  <div class="nav-item" id="navNext">
+    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+    <div class="nav-text">Próximo</div>
+    <div class="tooltip">Próxima Página</div>
+  </div>
+  <div class="nav-item" id="navRead">
+    <i class="fas fa-volume-up" aria-hidden="true"></i>
+    <div class="nav-text">Ler</div>
+    <div class="tooltip">Ativar/Desativar Áudio</div>
+  </div>
+  <div class="nav-item" id="navTheme">
+    <i class="fas fa-adjust" aria-hidden="true"></i>
+    <div class="nav-text">Tema</div>
+    <div class="tooltip">Alternar Tema</div>
+  </div>
+</div>
+
+<script>
+  let currentPage = 0;
+  let readingEnabled = false;
+  const swipeThreshold = 50;
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const pages = document.querySelectorAll(".page");
+    const ebookContainer = document.getElementById("ebookContainer");
+    const startScreen = document.getElementById("startScreen");
+    const slideContainer = document.getElementById("slideContainer");
+
+    // Índice com 12 páginas: Introdução, 10 tópicos e Conclusão
+    const indexItems = [
+      "Introdução",
+      "Tópico 1 – Provérbios 18:21",
+      "Tópico 2 – Tiago 1:26",
+      "Tópico 3 – Tiago 3:2",
+      "Tópico 4 – Provérbios 16:18",
+      "Tópico 5 – Provérbios 29:23",
+      "Tópico 6 – Salmos 19:13-14",
+      "Tópico 7 – Tiago 4:6 e Reflexão",
+      "Tópico 8 – Provérbios 6:6-11",
+      "Tópico 9 – Provérbios 19:24",
+      "Tópico 10 – Provérbios 26:13",
+      "Conclusão"
+    ];
+
+    // Gera o índice lateral dinamicamente
+    function generateIndex() {
+      const indexList = document.getElementById("indexList");
+      indexItems.forEach((item, idx) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#";
+        a.textContent = item;
+        a.addEventListener("click", function(e) {
+          e.preventDefault();
+          showPage(idx);
+          toggleSidebar();
+        });
+        li.appendChild(a);
+        indexList.appendChild(li);
+      });
+      // Espaço extra para finalização do menu
+      for (let i = 0; i < 2; i++) {
+        const blankLi = document.createElement("li");
+        blankLi.classList.add("blank");
+        blankLi.innerHTML = "&nbsp;";
+        indexList.appendChild(blankLi);
+      }
+    }
+
+    // Exibe a página (slide) correspondente
+    function showPage(index) {
+      pages.forEach((page, i) => {
+        page.classList.toggle("active", i === index);
+      });
+      currentPage = index;
+      document.getElementById("page-title").innerText = indexItems[currentPage];
+      updateProgress();
+      if (readingEnabled) readContent();
+    }
+
+    // Atualiza a barra de progresso
+    function updateProgress() {
+      const progress = document.getElementById("progress");
+      const progressBottom = document.getElementById("progressBottom");
+      const percent = (currentPage / (pages.length - 1)) * 100;
+      progress.style.width = percent + "%";
+      if (progressBottom) {
+        progressBottom.style.width = percent + "%";
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    // Leitura em voz alta do conteúdo da página
+    function readContent() {
+      speechSynthesis.cancel();
+      const text = pages[currentPage].innerText;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "pt-BR";
+      speechSynthesis.speak(utterance);
+    }
+
+    // Lê o conteúdo da capa ao carregar a página
+    function readCover() {
+      const coverText = document.getElementById('startScreen').innerText;
+      const utterance = new SpeechSynthesisUtterance(coverText);
+      utterance.lang = "pt-BR";
+      speechSynthesis.speak(utterance);
+    }
+
+    // Swipe para navegação em dispositivos móveis
+    let touchStartX = 0, touchEndX = 0;
+    slideContainer.addEventListener("touchstart", e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    slideContainer.addEventListener("touchend", e => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - swipeThreshold && currentPage < pages.length - 1) {
+        showPage(++currentPage);
+      }
+      if (touchEndX > touchStartX + swipeThreshold && currentPage > 0) {
+        showPage(--currentPage);
+      }
+    });
+
+    // Configuração dos controles da barra de navegação inferior
+    function setupBottomNav() {
+      document.getElementById("navIndex").addEventListener("click", toggleSidebar);
+      document.getElementById("navPrev").addEventListener("click", () => {
+        if (currentPage > 0) showPage(--currentPage);
+      });
+      document.getElementById("navRestart").addEventListener("click", () => {
+        ebookContainer.style.display = "none";
+        startScreen.style.display = "block";
+        showPage(0);
+      });
+      document.getElementById("navNext").addEventListener("click", () => {
+        if (currentPage < pages.length - 1) showPage(++currentPage);
+      });
+      document.getElementById("navRead").addEventListener("click", () => {
+        if (!readingEnabled) {
+          readingEnabled = true;
+          readContent();
+          document.querySelector("#navRead i").classList.replace("fa-volume-up", "fa-volume-mute");
+        } else {
+          readingEnabled = false;
+          speechSynthesis.cancel();
+          document.querySelector("#navRead i").classList.replace("fa-volume-mute", "fa-volume-up");
+        }
+      });
+      document.getElementById("navTheme").addEventListener("click", () => {
+        const currentTheme = document.body.getAttribute("data-theme");
+        document.body.setAttribute("data-theme", currentTheme === "light" ? "dark" : "light");
+      });
+    }
+
+    function init() {
+      generateIndex();
+      showPage(0);
+      setupBottomNav();
+      // Lê a capa na inicialização
+      readCover();
+    }
+    init();
+
+    // Ao clicar no botão "Iniciar"
+    document.getElementById("startBtn").addEventListener("click", function() {
+      startScreen.style.display = "none";
+      ebookContainer.style.display = "block";
+    });
+  });
+</script>
+</body>
+</html>
